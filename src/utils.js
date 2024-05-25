@@ -48,4 +48,4 @@ export const tempWatchedData = [
 export const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
-export const KEY = '3a4bf72a'
+export const KEY = "3a4bf72a";

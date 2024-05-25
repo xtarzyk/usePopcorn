@@ -4,7 +4,7 @@ function ErrorMessage({ message }) {
       <span>🛑</span>
       {message}
     </p>
-  )
+  );
 }
 
-export default ErrorMessage
+export default ErrorMessage;
