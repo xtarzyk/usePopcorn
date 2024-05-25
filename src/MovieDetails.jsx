@@ -3,9 +3,10 @@ import { KEY } from "./utils";
 import StarRating from "./StarRating";
 import Loader from "./Loader";
 
-function MovieDetails({ selectedId, onCloseMovie }) {
+function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [userRating, setUserRating] = useState("")
 
   const {
     Title: title,
@@ -19,6 +20,21 @@ function MovieDetails({ selectedId, onCloseMovie }) {
     Director: director,
     Genre: genre,
   } = movie;
+
+  function handleAdd() {
+    const newWatchedMovie = {
+      imdbID: selectedId,
+      title,
+      year,
+      poster,
+      imdbRating: Number(imdbRating),
+      runtime: Number(runtime.split(" ").at(0)),
+      userRating,
+    }
+
+    onAddWatched(newWatchedMovie)
+    onCloseMovie()
+  }
 
   useEffect(() => {
     async function getMovieDetails() {
@@ -62,7 +78,10 @@ function MovieDetails({ selectedId, onCloseMovie }) {
 
           <section>
             <div className="rating">
-              <StarRating />
+              <StarRating maxRating={10} size={24} onSetRating={setUserRating} />
+              {userRating > 0 && (<button className="btn-add" onClick={handleAdd}>
+                + Add to list
+              </button>)}
             </div>
             <p>
               <em>{plot}</em>

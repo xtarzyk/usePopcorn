@@ -7,7 +7,7 @@ import MainContainer from "./MainContainer";
 import MovieList from "./MovieList";
 import WatchedSummary from "./WatchedSummary";
 import WatchedMovieList from "./WatchedMovieList";
-import { tempMovieData, tempWatchedData, KEY } from "./utils";
+import { KEY } from "./utils";
 import Loader from "./Loader";
 import ErrorMessage from "./ErrorMessage";
 import MovieDetails from "./MovieDetails";
@@ -17,7 +17,7 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState("inception");
   const [selectedId, setSelectedId] = useState(null);
 
   function handleSelectMovie(id) {
@@ -29,6 +29,8 @@ export default function App() {
   }
 
   function handleAddWatched(movie) {
+    if (watched.find(watchedMovie => watchedMovie.imdbID === movie.imdbID)) return
+
     setWatched((watched) => [...watched, movie]);
   }
 
