@@ -1,24 +1,27 @@
-import { useEffect, useState } from "react";
-import Navbar from "./Navbar";
-import Search from "./Search";
-import NumResults from "./NumResults";
-import Box from "./Box";
-import MainContainer from "./MainContainer";
-import MovieList from "./MovieList";
-import WatchedSummary from "./WatchedSummary";
-import WatchedMovieList from "./WatchedMovieList";
-import { KEY } from "./utils";
-import Loader from "./Loader";
-import ErrorMessage from "./ErrorMessage";
-import MovieDetails from "./MovieDetails";
+import { useEffect, useState } from 'react';
+import Navbar from './Navbar';
+import Search from './Search';
+import NumResults from './NumResults';
+import Box from './Box';
+import MainContainer from './MainContainer';
+import MovieList from './MovieList';
+import WatchedSummary from './WatchedSummary';
+import WatchedMovieList from './WatchedMovieList';
+import Loader from './Loader';
+import ErrorMessage from './ErrorMessage';
+import MovieDetails from './MovieDetails';
+import { useMovies } from './useMovies';
 
 export default function App() {
-  const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [query, setQuery] = useState("inception");
+  // const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(() => {
+    const storedValue = localStorage.getItem('watched');
+    return JSON.parse(storedValue);
+  });
+  const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState(null);
+
+  const {movies, isLoading, error} = useMovies(query, handleCloseMovie)
 
   function handleSelectMovie(id) {
     setSelectedId((selectedId) => (selectedId === id ? null : id));
@@ -30,44 +33,17 @@ export default function App() {
 
   function handleAddWatched(movie) {
     setWatched((watched) => [...watched, movie]);
+
+    // localStorage.setItem('watched', JSON.stringify([...watched, movie]))
   }
 
   function handleDeleteMovie(id) {
-    setWatched(watched => watched.filter(movie => movie.imdbID !== id))
+    setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
 
   useEffect(() => {
-    async function fetchMovies() {
-      try {
-        setIsLoading(true);
-        setError("");
-        const res = await fetch(
-          `http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=${query}`,
-        );
-        if (!res.ok)
-          throw new Error("Something went wrong with fetching movies!");
-
-        const data = await res.json();
-        console.log(data);
-        if (data.Response === "False") throw new Error("Movie not found.");
-
-        setMovies(data.Search);
-      } catch (err) {
-        console.error(err.message);
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    if (query.length < 3) {
-      setMovies([]);
-      setError("");
-      return;
-    }
-
-    fetchMovies();
-  }, [query]);
+    localStorage.setItem('watched', JSON.stringify(watched));
+  }, [watched]);
 
   return (
     <>
@@ -79,9 +55,7 @@ export default function App() {
       <MainContainer>
         <Box>
           {isLoading && <Loader />}
-          {!isLoading && !error && (
-            <MovieList movies={movies} onSelectMovie={handleSelectMovie} />
-          )}
+          {!isLoading && !error && <MovieList movies={movies} onSelectMovie={handleSelectMovie} />}
           {error && <ErrorMessage message={error} />}
         </Box>
 
