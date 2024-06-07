@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { KEY } from "./utils";
 import StarRating from "./StarRating";
 import Loader from "./Loader";
+import { useKey } from "./useKey";
 
 function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const [movie, setMovie] = useState({});
@@ -46,6 +47,8 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     onAddWatched(newWatchedMovie);
     onCloseMovie();
   }
+
+  useKey('Escape', onCloseMovie)
 
   useEffect(() => {
     async function getMovieDetails() {
